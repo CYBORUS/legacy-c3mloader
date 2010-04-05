@@ -46,6 +46,15 @@ c3mModel* c3mOpen(const char* inFile)
         return NULL;
     }
 
+    unsigned short versionNumber;
+    fr = fread(&versionNumber, 2, 1, fp);
+    if (versionNumber > 1)
+    {
+        c3mError = C3M_UNSUPPORTED_SPEC;
+        fclose(fp);
+        return NULL;
+    }
+
     c3mModel* outModel;
     outModel = malloc(sizeof(c3mModel));
     if (outModel == NULL)
@@ -69,9 +78,6 @@ c3mModel* c3mOpen(const char* inFile)
     outModel->indices.array = NULL;
     outModel->indices.size = 0;
     outModel->textureFile = NULL;
-
-    unsigned short versionNumber;
-    fr = fread(&versionNumber, 2, 1, fp);
 
     unsigned short numberOfBlocks;
     fr = fread(&numberOfBlocks, 2, 1, fp);

@@ -33,6 +33,7 @@ extern "C" {
 #define C3M_INVALID_HEADER 2
 #define C3M_FAILED_ALLOCATION 3
 #define C3M_STRUCTURE_ERROR 4
+#define C3M_UNSUPPORTED_SPEC 5
 
 typedef struct {
     float* array;

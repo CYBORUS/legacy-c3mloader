@@ -57,6 +57,12 @@ int main(int argc, char** argv)
                 break;
             }
 
+            case C3M_UNSUPPORTED_SPEC:
+            {
+                printf("the file spec is newer than this loader supports");
+                break;
+            }
+
             default:
             {
                 printf("unknown");
