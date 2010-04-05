@@ -1,3 +1,20 @@
+/**
+ *  This file is part of c3mloader.
+ *
+ *  c3mloader is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  c3mloader is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with c3mloader.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "c3m.h"
 #include <stdio.h>
 
@@ -54,6 +71,7 @@ int main(int argc, char** argv)
     printf("%d vertices\n", m->vertices.size / 3u);
     printf("%d normals\n", m->normals.size / 3u);
     printf("%d colors\n", m->colors.size / 4u);
+    printf("%d secondary colors\n", m->secondaryColors.size / 4u);
     printf("%d texture coordinates\n", m->textureCoordinates.size / 2u);
     printf("%d triangles\n", m->indices.size / 3u);
 
