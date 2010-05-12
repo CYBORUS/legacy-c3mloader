@@ -7,9 +7,9 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="../../test-loader" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../.." />
-				<Option object_output="obj/Debug/" />
+				<Option output="..\..\test-loader" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="..\.." />
+				<Option object_output="obj\Debug\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option parameters="test.c3m" />
@@ -18,12 +18,12 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="../../libc3m" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
-				<Option type="3" />
+				<Option output="..\..\c3m.lib" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release\" />
+				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
-				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-fPIC" />
@@ -36,17 +36,18 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="../c3m.c">
+		<Unit filename="..\c3m.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../c3m.h" />
-		<Unit filename="../main.c">
+		<Unit filename="..\c3m.h" />
+		<Unit filename="..\main.c">
 			<Option compilerVar="CC" />
 			<Option target="Debug" />
 		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
