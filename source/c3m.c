@@ -28,7 +28,8 @@ c3mModel* c3mOpen(const char* inFile)
     c3mError = C3M_NO_ERRORS;
 
     FILE* fp; /* "fp" = file pointer */
-    fp = fopen(inFile, "r");
+    //open the file for reading and in binary mode
+    fp = fopen(inFile, "rb");
     if (fp == NULL)
     {
         c3mError = C3M_MISSING_FILE;
@@ -81,12 +82,6 @@ c3mModel* c3mOpen(const char* inFile)
 
     unsigned short numberOfBlocks;
     fr = fread(&numberOfBlocks, 2, 1, fp);
-    long int pos = ftell(fp);
-    fseek(fp, 0, SEEK_END);
-    long int end = ftell(fp);
-    fseek(fp, pos, SEEK_SET);
-
-    fprintf(stderr, "File size: %ld pos: %ld\n", end, pos);
 
     unsigned short i;
     for (i = 0; i < numberOfBlocks; ++i)
@@ -96,18 +91,11 @@ c3mModel* c3mOpen(const char* inFile)
         fr = fread(&blockName, 2, 1, fp);
         unsigned int blockSize;
         fr = fread(&blockSize, 4, 1, fp);
-        //fseek(fp, 6, SEEK_CUR);
-        if (!(ftell(fp) > pos))
-        {
-            fprintf(stderr, "position didn't move: %ld, %ld\n", pos, ftell(fp));
-        }
-        //fprintf(stderr, "give me something!\n");
-        fprintf(stderr, "reading block %X blockSize: %u pos: %ld\n", blockName, blockSize, ftell(fp));
+
         switch (blockName)
         {
             case 0x4156: /* vertices */
             {
-                printf("loading vertices\n");
                 outModel->vertices.size = blockSize / sizeof(float);
                 outModel->vertices.array = calloc(outModel->vertices.size,
                     sizeof(float));
@@ -117,7 +105,6 @@ c3mModel* c3mOpen(const char* inFile)
 
             case 0x414e: /* normals */
             {
-                printf("loading normals\n");
                 outModel->normals.size = blockSize / sizeof(float);
                 outModel->normals.array = calloc(outModel->normals.size,
                     sizeof(float));
@@ -127,7 +114,6 @@ c3mModel* c3mOpen(const char* inFile)
 
             case 0x4143: /* colors */
             {
-                printf("loading colors\n");
                 outModel->colors.size = blockSize / sizeof(float);
                 outModel->colors.array = calloc(outModel->colors.size,
                     sizeof(float));
@@ -137,7 +123,6 @@ c3mModel* c3mOpen(const char* inFile)
 
             case 0x3243: /* secondary colors */
             {
-                printf("secondary colors\n");
                 outModel->secondaryColors.size = blockSize / sizeof(float);
                 outModel->secondaryColors.array =
                     calloc(outModel->secondaryColors.size, sizeof(float));
@@ -147,7 +132,6 @@ c3mModel* c3mOpen(const char* inFile)
 
             case 0x4354: /* texture coordinates */
             {
-                fprintf(stderr, "found texCoords block\n");
                 outModel->textureCoordinates.size = blockSize / sizeof(float);
                 outModel->textureCoordinates.array =
                     calloc(outModel->textureCoordinates.size, sizeof(float));
@@ -158,7 +142,6 @@ c3mModel* c3mOpen(const char* inFile)
 
             case 0x4149: /* indices */
             {
-                printf("loading indices\n");
                 outModel->indices.size = blockSize / sizeof(unsigned int);
                 outModel->indices.array = calloc(outModel->indices.size,
                     sizeof(unsigned int));
@@ -168,7 +151,6 @@ c3mModel* c3mOpen(const char* inFile)
 
             case 0x4654: /* texture file name */
             {
-                printf("loading filename\n");
                 outModel->textureFile = malloc(blockSize + 1);
                 fr = fread(outModel->textureFile, 1, blockSize, fp);
                 outModel->textureFile[blockSize] = '\0';
@@ -177,7 +159,7 @@ c3mModel* c3mOpen(const char* inFile)
 
             default: /* unidentified block */
             {
-                fprintf(stderr, "unidentified block: %X\n", blockName);
+                //fprintf(stderr, "unidentified block: %X\n", blockName);
                 if (blockName < 0x3000 || blockName > 0x5AFF)
                 {
                     /** invalid block name -- block names consist of 0 to 9 and
@@ -194,7 +176,6 @@ c3mModel* c3mOpen(const char* inFile)
                 }
             }
         }
-        //fseek(fp, blockSize, SEEK_CUR);
     }
 
     fclose(fp);
