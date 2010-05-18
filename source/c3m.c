@@ -86,7 +86,6 @@ c3mModel* c3mOpen(const char* inFile)
     unsigned short i;
     for (i = 0; i < numberOfBlocks; ++i)
     {
-        pos = ftell(fp);
         unsigned short blockName;
         fr = fread(&blockName, 2, 1, fp);
         unsigned int blockSize;
