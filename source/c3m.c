@@ -28,7 +28,7 @@ c3mModel* c3mOpen(const char* inFile)
     c3mError = C3M_NO_ERRORS;
 
     FILE* fp; /* "fp" = file pointer */
-    //open the file for reading and in binary mode
+    /* open the file for reading and in binary mode */
     fp = fopen(inFile, "rb");
     if (fp == NULL)
     {
@@ -38,7 +38,7 @@ c3mModel* c3mOpen(const char* inFile)
 
     char header[8];
     size_t fr;
-    fr = fread(header, 1, 7, fp);
+    fr = fread(header, 1, 7 * sizeof(char), fp);
     header[7] = '\0';
     if (strcmp(header, "CYBORUS"))
     {
@@ -57,7 +57,7 @@ c3mModel* c3mOpen(const char* inFile)
     }
 
     c3mModel* outModel;
-    outModel = malloc(sizeof(c3mModel));
+    outModel = (c3mModel*)malloc(sizeof(c3mModel));
     if (outModel == NULL)
     {
         c3mError = C3M_FAILED_ALLOCATION;
@@ -96,8 +96,18 @@ c3mModel* c3mOpen(const char* inFile)
             case 0x4156: /* vertices */
             {
                 outModel->vertices.size = blockSize / sizeof(float);
-                outModel->vertices.array = calloc(outModel->vertices.size,
-                    sizeof(float));
+                outModel->vertices.array = (float*)calloc(
+                    outModel->vertices.size, sizeof(float));
+
+                if (outModel->vertices.array == NULL)
+                {
+                    outModel->vertices.size = 0;
+                    c3mError = C3M_FAILED_ALLOCATION;
+                    fclose(fp);
+                    c3mClose(outModel);
+                    return NULL;
+                }
+
                 fr = fread(outModel->vertices.array, 1, blockSize, fp);
                 break;
             }
@@ -105,8 +115,18 @@ c3mModel* c3mOpen(const char* inFile)
             case 0x414e: /* normals */
             {
                 outModel->normals.size = blockSize / sizeof(float);
-                outModel->normals.array = calloc(outModel->normals.size,
+                outModel->normals.array = (float*)calloc(outModel->normals.size,
                     sizeof(float));
+
+                if (outModel->normals.array == NULL)
+                {
+                    outModel->normals.size = 0;
+                    c3mError = C3M_FAILED_ALLOCATION;
+                    fclose(fp);
+                    c3mClose(outModel);
+                    return NULL;
+                }
+
                 fr = fread(outModel->normals.array, 1, blockSize, fp);
                 break;
             }
@@ -114,8 +134,18 @@ c3mModel* c3mOpen(const char* inFile)
             case 0x4143: /* colors */
             {
                 outModel->colors.size = blockSize / sizeof(float);
-                outModel->colors.array = calloc(outModel->colors.size,
+                outModel->colors.array = (float*)calloc(outModel->colors.size,
                     sizeof(float));
+
+                if (outModel->colors.array == NULL)
+                {
+                    outModel->colors.size = 0;
+                    c3mError = C3M_FAILED_ALLOCATION;
+                    fclose(fp);
+                    c3mClose(outModel);
+                    return NULL;
+                }
+
                 fr = fread(outModel->colors.array, 1, blockSize, fp);
                 break;
             }
@@ -124,7 +154,18 @@ c3mModel* c3mOpen(const char* inFile)
             {
                 outModel->secondaryColors.size = blockSize / sizeof(float);
                 outModel->secondaryColors.array =
-                    calloc(outModel->secondaryColors.size, sizeof(float));
+                    (float*)calloc(outModel->secondaryColors.size,
+                    sizeof(float));
+
+                if (outModel->secondaryColors.array == NULL)
+                {
+                    outModel->secondaryColors.size = 0;
+                    c3mError = C3M_FAILED_ALLOCATION;
+                    fclose(fp);
+                    c3mClose(outModel);
+                    return NULL;
+                }
+
                 fr = fread(outModel->secondaryColors.array, 1, blockSize, fp);
                 break;
             }
@@ -133,7 +174,18 @@ c3mModel* c3mOpen(const char* inFile)
             {
                 outModel->textureCoordinates.size = blockSize / sizeof(float);
                 outModel->textureCoordinates.array =
-                    calloc(outModel->textureCoordinates.size, sizeof(float));
+                    (float*)calloc(outModel->textureCoordinates.size,
+                    sizeof(float));
+
+                if (outModel->textureCoordinates.array == NULL)
+                {
+                    outModel->textureCoordinates.size = 0;
+                    c3mError = C3M_FAILED_ALLOCATION;
+                    fclose(fp);
+                    c3mClose(outModel);
+                    return NULL;
+                }
+
                 fr = fread(outModel->textureCoordinates.array, 1, blockSize,
                     fp);
                 break;
@@ -142,15 +194,34 @@ c3mModel* c3mOpen(const char* inFile)
             case 0x4149: /* indices */
             {
                 outModel->indices.size = blockSize / sizeof(unsigned int);
-                outModel->indices.array = calloc(outModel->indices.size,
-                    sizeof(unsigned int));
+                outModel->indices.array = (unsigned int*)calloc(
+                    outModel->indices.size, sizeof(unsigned int));
+
+                if (outModel->indices.array == NULL)
+                {
+                    outModel->indices.size = 0;
+                    c3mError = C3M_FAILED_ALLOCATION;
+                    fclose(fp);
+                    c3mClose(outModel);
+                    return NULL;
+                }
+
                 fr = fread(outModel->indices.array, 1, blockSize, fp);
                 break;
             }
 
             case 0x4654: /* texture file name */
             {
-                outModel->textureFile = malloc(blockSize + 1);
+                outModel->textureFile = (char*)malloc(blockSize + 1);
+
+                if (outModel->textureFile == NULL)
+                {
+                    c3mError = C3M_FAILED_ALLOCATION;
+                    fclose(fp);
+                    c3mClose(outModel);
+                    return NULL;
+                }
+
                 fr = fread(outModel->textureFile, 1, blockSize, fp);
                 outModel->textureFile[blockSize] = '\0';
                 break;
@@ -158,7 +229,7 @@ c3mModel* c3mOpen(const char* inFile)
 
             default: /* unidentified block */
             {
-                //fprintf(stderr, "unidentified block: %X\n", blockName);
+                /* fprintf(stderr, "unidentified block: %X\n", blockName); */
                 if (blockName < 0x3000 || blockName > 0x5AFF)
                 {
                     /** invalid block name -- block names consist of 0 to 9 and
