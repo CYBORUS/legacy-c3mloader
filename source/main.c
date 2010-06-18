@@ -79,7 +79,8 @@ int main(int argc, char** argv)
     printf("%d colors\n", m->colors.size / 4u);
     printf("%d secondary colors\n", m->secondaryColors.size / 4u);
     printf("%d texture coordinates\n", m->textureCoordinates.size / 2u);
-    printf("%d triangles\n", m->indices.size / 3u);
+    printf("%d normal triangles\n", m->indices.size / 3u);
+    printf("%d alternate triangles\n", m->shortIndices.size / 3u);
 
     if (m->textureFile != NULL)
     {

@@ -26,7 +26,7 @@ extern "C" {
 #endif
 
 #define C3ML_MAJOR_VERSION 1
-#define C3ML_MINOR_VERSION 0
+#define C3ML_MINOR_VERSION 1
 
 #define C3M_NO_ERRORS 0
 #define C3M_MISSING_FILE 1
@@ -46,12 +46,18 @@ typedef struct {
 } c3mIndexBlock;
 
 typedef struct {
+    unsigned short* array;
+    unsigned int size;
+} c3mShortIndexBlock;
+
+typedef struct {
     c3mFloatBlock vertices;
     c3mFloatBlock normals;
     c3mFloatBlock colors;
     c3mFloatBlock secondaryColors;
     c3mFloatBlock textureCoordinates;
     c3mIndexBlock indices;
+    c3mShortIndexBlock shortIndices;
     char* textureFile;
 } c3mModel;
 
